@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Member {
+  id          String      @id @default(uuid())
+  name                 String
+  isActiveResearch     Boolean     @default(true)
+  isActivePaper        Boolean     @default(true)
+  overrideResearchDate DateTime?
+  overridePaperDate    DateTime?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+  
+  absences    Absence[]
+  assignments Assignment[]
+}
+
+model Schedule {
+  id          String      @id @default(uuid())
+  date              DateTime    @unique
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  assignments       Assignment[]
+}
+
+model Absence {
+  id          String      @id @default(uuid())
+  memberId    String
+  date        DateTime
+  createdAt   DateTime    @default(now())
+  
+  member      Member      @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([memberId, date])
+}
+
+model SkipDate {
+  id                String      @id @default(uuid())
+  date              DateTime    @unique
+  isResearchSkipped Boolean     @default(false)
+  isPaperSkipped    Boolean     @default(false)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+}
+
+model Assignment {
+  id          String      @id @default(uuid())
+  scheduleId  String
+  memberId    String
+  role        String      // "RESEARCH" | "PAPER"
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  schedule    Schedule    @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  member      Member      @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([scheduleId, memberId, role]) // A member cannot have the same role twice in one schedule
+  @@unique([scheduleId, memberId])       // A member cannot have multiple roles in the same schedule
+}
