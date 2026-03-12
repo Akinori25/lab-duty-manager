@@ -7,14 +7,24 @@ export default function GenerateScheduleButton() {
   const [loading, setLoading] = useState(false);
 
   const handleGenerate = async () => {
+    const password = prompt('Admin password');
+    if (!password) return;
+
     setLoading(true);
-    const result = await generateSchedules(8);
-    if (result.success) {
-      alert("Successfully generated schedules!");
-    } else {
-      alert("Failed to generate: " + result.error);
+
+    try {
+      const result = await generateSchedules(password, 8);
+
+      if (result.success) {
+        alert('Successfully generated schedules!');
+      } else {
+        alert('Failed to generate: ' + result.error);
+      }
+    } catch {
+      alert('Unauthorized');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
