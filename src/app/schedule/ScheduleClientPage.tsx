@@ -1,15 +1,14 @@
 'use client';
 
-export default function ScheduleClientPage({ 
-  schedules 
-}: { 
-  schedules: any[] 
+import React from 'react';
+
+export default function ScheduleClientPage({
+  schedules
+}: {
+  schedules: any[]
 }) {
-
-
   return (
     <div className="table-container">
-      
       <table className="data-table">
         <thead>
           <tr>
@@ -28,18 +27,27 @@ export default function ScheduleClientPage({
           ) : (
             schedules.map((schedule: any) => {
               const dateString = new Date(schedule.date).toLocaleDateString(undefined, {
-                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
               });
-              
-              // Normalize data: pick out exactly one assignment per role, if it exists
+
               const paperAssignment = schedule.assignments.find((a: any) => a.role === 'PAPER');
               const researchAssignment = schedule.assignments.find((a: any) => a.role === 'RESEARCH');
 
               return (
-                <optgroup key={schedule.id} label={dateString} style={{ display: 'contents' }}>
-                  {/* Stable Row 1: Paper Briefing with rowSpan=2 for the Date */}
+                <React.Fragment key={schedule.id}>
                   <tr style={{ borderTop: '1px solid var(--border-color)' }}>
-                    <td style={{ fontWeight: 600, color: 'var(--text-main)', verticalAlign: 'top', paddingTop: '1rem' }} rowSpan={2}>
+                    <td
+                      style={{
+                        fontWeight: 600,
+                        color: 'var(--text-main)',
+                        verticalAlign: 'top',
+                        paddingTop: '1rem'
+                      }}
+                      rowSpan={2}
+                    >
                       {dateString}
                     </td>
                     <td style={{ fontWeight: 500 }}>
@@ -49,12 +57,13 @@ export default function ScheduleClientPage({
                       {paperAssignment ? (
                         <span>{paperAssignment.member?.name || 'Unknown'}</span>
                       ) : (
-                        <span className="badge badge-secondary" style={{ backgroundColor: 'var(--bg-main)' }}>Skipped</span>
+                        <span className="badge badge-secondary" style={{ backgroundColor: 'var(--bg-main)' }}>
+                          Skipped
+                        </span>
                       )}
                     </td>
                   </tr>
-                  
-                  {/* Stable Row 2: Research Presentation */}
+
                   <tr>
                     <td style={{ fontWeight: 500 }}>
                       🔬 Research Presentation
@@ -63,11 +72,13 @@ export default function ScheduleClientPage({
                       {researchAssignment ? (
                         <span>{researchAssignment.member?.name || 'Unknown'}</span>
                       ) : (
-                        <span className="badge badge-secondary" style={{ backgroundColor: 'var(--bg-main)' }}>Skipped</span>
+                        <span className="badge badge-secondary" style={{ backgroundColor: 'var(--bg-main)' }}>
+                          Skipped
+                        </span>
                       )}
                     </td>
                   </tr>
-                </optgroup>
+                </React.Fragment>
               );
             })
           )}
