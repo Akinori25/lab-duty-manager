@@ -23,12 +23,6 @@ export default function ScheduleClientPage({
   return (
     <div className="table-container">
 
-      <div style={{ marginBottom: '1rem' }}>
-        <button onClick={handleGenerate}>
-          Generate Schedule
-        </button>
-      </div>
-
       <table className="data-table">
         <thead>
           <tr>
