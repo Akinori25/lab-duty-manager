@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { addMember, updateMember } from '../actions/members';
+import DownloadMembersPdfButton from '../components/DownloadMembersPdfButton'
 
 export default function MembersClientPage({ initialMembers }: { initialMembers: any[] }) {
   const [members, setMembers] = useState(initialMembers);
@@ -252,6 +253,7 @@ export default function MembersClientPage({ initialMembers }: { initialMembers: 
           )}
         </div>
       </div>
+      <DownloadMembersPdfButton members={initialMembers} />
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import React from 'react';
 import { generateSchedules } from '../actions/schedule';
 import EmailComposer from '../components/EmailComposer';
+import DownloadSchedulePdfButton from '../components/DownloadSchedulePdfButton';
 
 export default function ScheduleClientPage({
   schedules
@@ -104,6 +105,7 @@ export default function ScheduleClientPage({
         </tbody>
       </table>
       <EmailComposer nextSchedule={schedules.length > 0 ? schedules[0] : null} />
+      <DownloadSchedulePdfButton schedules={schedules} />
     </div>
   );
 }
