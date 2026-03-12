@@ -17,7 +17,14 @@ export default async function SchedulePage() {
   });
 
   const members = await prisma.member.findMany({
-    orderBy: { name: 'asc' }
+    orderBy: { name: 'asc' },
+    include: {
+      assignments: {
+        include: {
+          schedule: true
+        }
+      }
+    }
   });
 
   return <ScheduleClientPage schedules={schedules} members={members} />;

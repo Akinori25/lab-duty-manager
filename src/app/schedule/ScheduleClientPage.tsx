@@ -3,7 +3,7 @@
 import React from 'react';
 import { generateSchedules } from '../actions/schedule';
 import EmailComposer from '../components/EmailComposer';
-import DownloadConferenceReportButton from '../components/DownloadConferenceReportButton';
+import DownloadDutySummaryButton from '../components/DownloadDutySummaryButton';
 
 export default function ScheduleClientPage({
   schedules,
@@ -26,6 +26,12 @@ export default function ScheduleClientPage({
 
   return (
     <div className="table-container">
+      <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+        <button onClick={handleGenerate}>
+          Generate Schedule
+        </button>
+
+      </div>
 
       <table className="data-table">
         <thead>
@@ -107,7 +113,7 @@ export default function ScheduleClientPage({
         </tbody>
       </table>
       <EmailComposer nextSchedule={schedules.length > 0 ? schedules[0] : null} />
-      <DownloadConferenceReportButton schedules={schedules} members={members} />
+      <DownloadDutySummaryButton schedules={schedules} members={members} />
     </div>
   );
 }

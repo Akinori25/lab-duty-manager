@@ -12,7 +12,7 @@ function formatDate(dateInput: string | Date) {
 }
 
 function escapeHtml(value: string) {
-  return value
+  return String(value)
     .replaceAll('&', '&amp;')
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;')
@@ -20,7 +20,31 @@ function escapeHtml(value: string) {
     .replaceAll("'", '&#39;');
 }
 
-export default function DownloadConferenceReportButton({
+function getLastAssignmentDate(member: any, role: 'PAPER' | 'RESEARCH') {
+  const filtered = (member.assignments ?? [])
+    .filter((a: any) => a.role === role && a.schedule?.date)
+    .sort(
+      (a: any, b: any) =>
+        new Date(b.schedule.date).getTime() - new Date(a.schedule.date).getTime()
+    );
+
+  return filtered.length > 0 ? new Date(filtered[0].schedule.date) : null;
+}
+
+function getDaysSince(date: Date | null) {
+  if (!date) return '-';
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const target = new Date(date);
+  target.setHours(0, 0, 0, 0);
+
+  const diffMs = today.getTime() - target.getTime();
+  return String(Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+}
+
+export default function DownloadDutySummaryButton({
   schedules,
   members
 }: {
@@ -61,11 +85,18 @@ export default function DownloadConferenceReportButton({
 
     const memberRows = members
       .map((member: any) => {
+        const lastPaperDate = getLastAssignmentDate(member, 'PAPER');
+        const lastResearchDate = getLastAssignmentDate(member, 'RESEARCH');
+
         return `
           <tr>
             <td>${escapeHtml(member.name ?? '')}</td>
             <td>${member.isActivePaper ? 'Active' : 'Inactive'}</td>
+            <td>${lastPaperDate ? escapeHtml(formatDate(lastPaperDate)) : '-'}</td>
+            <td>${escapeHtml(getDaysSince(lastPaperDate))}</td>
             <td>${member.isActiveResearch ? 'Active' : 'Inactive'}</td>
+            <td>${lastResearchDate ? escapeHtml(formatDate(lastResearchDate)) : '-'}</td>
+            <td>${escapeHtml(getDaysSince(lastResearchDate))}</td>
           </tr>
         `;
       })
@@ -75,7 +106,7 @@ export default function DownloadConferenceReportButton({
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Conference Report</title>
+  <title>Duty Summary</title>
   <style>
     body {
       font-family: Arial, Helvetica, sans-serif;
@@ -149,7 +180,7 @@ export default function DownloadConferenceReportButton({
   </style>
 </head>
 <body>
-  <h1>Conference Report</h1>
+  <h1>Duty Summary</h1>
   <p>Generated from Lab Duty Manager</p>
 
   <div class="meta-box">
@@ -177,12 +208,16 @@ export default function DownloadConferenceReportButton({
     <thead>
       <tr>
         <th>Name</th>
-        <th>Paper</th>
-        <th>Research</th>
+        <th>Paper Status</th>
+        <th>Last Paper Day</th>
+        <th>Days Since Paper</th>
+        <th>Research Status</th>
+        <th>Last Presentation Day</th>
+        <th>Days Since Presentation</th>
       </tr>
     </thead>
     <tbody>
-      ${memberRows || `<tr><td colspan="3">No member data available.</td></tr>`}
+      ${memberRows || `<tr><td colspan="7">No member data available.</td></tr>`}
     </tbody>
   </table>
 
@@ -197,7 +232,7 @@ export default function DownloadConferenceReportButton({
 
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'conference-report.html';
+    a.download = 'duty-summary.html';
     a.click();
 
     URL.revokeObjectURL(url);
@@ -205,7 +240,7 @@ export default function DownloadConferenceReportButton({
 
   return (
     <button className="btn btn-secondary" onClick={handleDownload}>
-      Download Conference Report
+      Download Duty Summary
     </button>
   );
 }
