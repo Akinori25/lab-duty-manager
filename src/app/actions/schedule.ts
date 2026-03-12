@@ -13,7 +13,11 @@ function getNextThursday(fromDate: Date): Date {
   return d;
 }
 
-export async function generateSchedules(weeks: number = 8) {
+export async function generateSchedules(password: string, weeks: number = 8) {
+  if (password !== process.env.ADMIN_PASSWORD) {
+    throw new Error('Unauthorized');
+  }
+
   try {
     let currentDate = new Date();
 
@@ -97,8 +101,10 @@ export async function generateSchedules(weeks: number = 8) {
         const scheduleTime = dayStart.getTime();
         const msPerDay = 1000 * 60 * 60 * 24;
 
-        const daysSincePaper = effectivePaperDate > 0 ? Math.floor((scheduleTime - effectivePaperDate) / msPerDay) : 10000;
-        const daysSinceResearch = effectiveResearchDate > 0 ? Math.floor((scheduleTime - effectiveResearchDate) / msPerDay) : 10000;
+        const daysSincePaper =
+          effectivePaperDate > 0 ? Math.floor((scheduleTime - effectivePaperDate) / msPerDay) : 10000;
+        const daysSinceResearch =
+          effectiveResearchDate > 0 ? Math.floor((scheduleTime - effectiveResearchDate) / msPerDay) : 10000;
 
         return { ...member, daysSincePaper, daysSinceResearch };
       });

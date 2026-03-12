@@ -1,14 +1,34 @@
 'use client';
 
 import React from 'react';
+import { generateSchedules } from '../actions/schedule';
 
 export default function ScheduleClientPage({
   schedules
 }: {
   schedules: any[]
 }) {
+
+  const handleGenerate = async () => {
+    const password = prompt("Admin password");
+    if (!password) return;
+
+    try {
+      await generateSchedules(password, 8);
+    } catch {
+      alert("Unauthorized");
+    }
+  };
+
   return (
     <div className="table-container">
+
+      <div style={{ marginBottom: '1rem' }}>
+        <button onClick={handleGenerate}>
+          Generate Schedule
+        </button>
+      </div>
+
       <table className="data-table">
         <thead>
           <tr>
@@ -26,12 +46,16 @@ export default function ScheduleClientPage({
             </tr>
           ) : (
             schedules.map((schedule: any) => {
-              const dateString = new Date(schedule.date).toLocaleDateString(undefined, {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              });
+              const d = new Date(schedule.date)
+              const dateString =
+                d.getFullYear() +
+                "-" +
+                String(d.getMonth() +1).padStart(2,'0') +
+                "-" +
+                String(d.getDate()).padStart(2,'0') +
+                " (" +
+                d.toLocaleDateString(undefined,{weekday:'short'}) +
+                ")"
 
               const paperAssignment = schedule.assignments.find((a: any) => a.role === 'PAPER');
               const researchAssignment = schedule.assignments.find((a: any) => a.role === 'RESEARCH');
