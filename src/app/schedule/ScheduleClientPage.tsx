@@ -26,12 +26,6 @@ export default function ScheduleClientPage({
 
   return (
     <div className="table-container">
-      <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
-        <button onClick={handleGenerate}>
-          Generate Schedule
-        </button>
-
-      </div>
 
       <table className="data-table">
         <thead>

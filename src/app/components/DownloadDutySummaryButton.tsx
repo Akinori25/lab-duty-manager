@@ -21,8 +21,19 @@ function escapeHtml(value: string) {
 }
 
 function getLastAssignmentDate(member: any, role: 'PAPER' | 'RESEARCH') {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   const filtered = (member.assignments ?? [])
-    .filter((a: any) => a.role === role && a.schedule?.date)
+    .filter((a: any) => {
+      if (a.role !== role) return false;
+      if (!a.schedule?.date) return false;
+
+      const d = new Date(a.schedule.date);
+      d.setHours(0, 0, 0, 0);
+
+      return d <= today; // ←ここが重要
+    })
     .sort(
       (a: any, b: any) =>
         new Date(b.schedule.date).getTime() - new Date(a.schedule.date).getTime()
