@@ -3,12 +3,14 @@
 import React from 'react';
 import { generateSchedules } from '../actions/schedule';
 import EmailComposer from '../components/EmailComposer';
-import DownloadSchedulePdfButton from '../components/DownloadSchedulePdfButton';
+import DownloadConferenceReportButton from '../components/DownloadConferenceReportButton';
 
 export default function ScheduleClientPage({
-  schedules
+  schedules,
+  members
 }: {
-  schedules: any[]
+  schedules: any[];
+  members: any[];
 }) {
 
   const handleGenerate = async () => {
@@ -105,7 +107,7 @@ export default function ScheduleClientPage({
         </tbody>
       </table>
       <EmailComposer nextSchedule={schedules.length > 0 ? schedules[0] : null} />
-      <DownloadSchedulePdfButton schedules={schedules} />
+      <DownloadConferenceReportButton schedules={schedules} members={members} />
     </div>
   );
 }
