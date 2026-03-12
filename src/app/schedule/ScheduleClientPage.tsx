@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { generateSchedules } from '../actions/schedule';
+import EmailComposer from '../components/EmailComposer';
 
 export default function ScheduleClientPage({
   schedules
@@ -102,6 +103,7 @@ export default function ScheduleClientPage({
           )}
         </tbody>
       </table>
+      <EmailComposer nextSchedule={schedules.length > 0 ? schedules[0] : null} />
     </div>
   );
 }
