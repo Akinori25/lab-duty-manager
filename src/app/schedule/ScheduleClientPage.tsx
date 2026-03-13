@@ -71,7 +71,7 @@ export default function ScheduleClientPage({
                   <div className="schedule-cell schedule-assignment-cell">
                     <div className="mobile-label">Research</div>
                     <div className="assignment-box">
-                      <div>
+                      <div className="assignment-badge-row">
                         <span className="role-pill research-pill">
                           🔬 Research Presentation
                         </span>
@@ -89,7 +89,7 @@ export default function ScheduleClientPage({
                   <div className="schedule-cell schedule-assignment-cell">
                     <div className="mobile-label">Paper</div>
                     <div className="assignment-box">
-                      <div>
+                      <div className="assignment-badge-row">
                         <span className="role-pill paper-pill">
                           📄 Paper Briefing
                         </span>
@@ -164,14 +164,16 @@ export default function ScheduleClientPage({
 
         .schedule-date-cell {
           display: flex;
-          align-items: center;
+          flex-direction: column;
+          justify-content: center;
           background: var(--bg-subtle, #fafafa);
           border-right: 1px solid var(--border-color);
         }
 
         .schedule-assignment-cell {
           display: flex;
-          align-items: center;
+          flex-direction: column;
+          justify-content: center;
         }
 
         .schedule-assignment-cell:not(:last-child) {
@@ -182,15 +184,22 @@ export default function ScheduleClientPage({
           font-size: 1rem;
           font-weight: 700;
           color: var(--text-main);
-          line-height: 1.35;
+          line-height: 1.4;
         }
 
         .assignment-box {
           display: flex;
           flex-direction: column;
-          gap: 0.55rem;
+          align-items: flex-start;
           justify-content: center;
+          gap: 0.7rem;
           width: 100%;
+        }
+
+        .assignment-badge-row {
+          width: 100%;
+          display: flex;
+          align-items: flex-start;
         }
 
         .role-pill {
@@ -215,10 +224,13 @@ export default function ScheduleClientPage({
         }
 
         .assignee-text {
+          width: 100%;
           font-size: 1rem;
           font-weight: 600;
           color: var(--text-main);
           word-break: break-word;
+          line-height: 1.5;
+          text-align: left;
         }
 
         .skipped-badge {
@@ -240,7 +252,8 @@ export default function ScheduleClientPage({
           color: var(--text-muted);
           letter-spacing: 0.03em;
           text-transform: uppercase;
-          margin-bottom: 0.45rem;
+          margin-bottom: 0.5rem;
+          line-height: 1.2;
         }
 
         @media (max-width: 900px) {
@@ -270,11 +283,21 @@ export default function ScheduleClientPage({
           }
 
           .schedule-cell {
-            padding: 0.95rem 1rem;
+            padding: 1rem;
           }
 
           .date-text {
+            font-size: 1.02rem;
+            line-height: 1.45;
+          }
+
+          .assignment-box {
+            gap: 0.75rem;
+          }
+
+          .assignee-text {
             font-size: 1rem;
+            line-height: 1.55;
           }
         }
 
@@ -292,17 +315,43 @@ export default function ScheduleClientPage({
           }
 
           .schedule-cell {
-            padding: 0.9rem 0.9rem;
+            padding: 0.95rem 0.95rem;
+          }
+
+          .mobile-label {
+            margin-bottom: 0.45rem;
+            font-size: 0.74rem;
           }
 
           .role-pill {
             font-size: 0.76rem;
             white-space: normal;
-            line-height: 1.3;
+            line-height: 1.35;
+            max-width: 100%;
           }
 
           .assignee-text {
-            font-size: 0.95rem;
+            font-size: 0.98rem;
+            line-height: 1.55;
+          }
+        }
+
+        @media (max-width: 420px) {
+          .schedule-cell {
+            padding: 0.9rem 0.85rem;
+          }
+
+          .date-text {
+            font-size: 1rem;
+          }
+
+          .role-pill {
+            font-size: 0.74rem;
+            padding: 0.34rem 0.62rem;
+          }
+
+          .assignee-text {
+            font-size: 0.96rem;
           }
         }
       `}</style>
