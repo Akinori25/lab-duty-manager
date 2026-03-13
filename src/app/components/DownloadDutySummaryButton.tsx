@@ -20,19 +20,27 @@ function escapeHtml(value: string) {
     .replaceAll("'", '&#39;');
 }
 
-function getLastAssignmentDate(member: any, role: 'PAPER' | 'RESEARCH') {
+function getTodayString() {
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  return (
+    today.getFullYear() +
+    '-' +
+    String(today.getMonth() + 1).padStart(2, '0') +
+    '-' +
+    String(today.getDate()).padStart(2, '0')
+  );
+}
+
+function getLastAssignmentDate(member: any, role: 'PAPER' | 'RESEARCH') {
+  const todayStr = getTodayString();
 
   const filtered = (member.assignments ?? [])
     .filter((a: any) => {
       if (a.role !== role) return false;
       if (!a.schedule?.date) return false;
 
-      const d = new Date(a.schedule.date);
-      d.setHours(0, 0, 0, 0);
-
-      return d <= today; // ←ここが重要
+      const scheduleDateStr = formatDate(a.schedule.date);
+      return scheduleDateStr <= todayStr;
     })
     .sort(
       (a: any, b: any) =>
@@ -82,13 +90,13 @@ export default function DownloadDutySummaryButton({
         return `
           <tr>
             <td>${escapeHtml(date)}</td>
-            <td>Paper Briefing</td>
-            <td>${escapeHtml(paper?.member?.name ?? 'Skipped')}</td>
+            <td>Research Presentation</td>
+            <td>${escapeHtml(research?.member?.name ?? 'Skipped')}</td>
           </tr>
           <tr>
             <td>${escapeHtml(date)}</td>
-            <td>Research Presentation</td>
-            <td>${escapeHtml(research?.member?.name ?? 'Skipped')}</td>
+            <td>Paper Briefing</td>
+            <td>${escapeHtml(paper?.member?.name ?? 'Skipped')}</td>
           </tr>
         `;
       })
@@ -102,12 +110,12 @@ export default function DownloadDutySummaryButton({
         return `
           <tr>
             <td>${escapeHtml(member.name ?? '')}</td>
-            <td>${member.isActivePaper ? 'Active' : 'Inactive'}</td>
-            <td>${lastPaperDate ? escapeHtml(formatDate(lastPaperDate)) : '-'}</td>
-            <td>${escapeHtml(getDaysSince(lastPaperDate))}</td>
             <td>${member.isActiveResearch ? 'Active' : 'Inactive'}</td>
             <td>${lastResearchDate ? escapeHtml(formatDate(lastResearchDate)) : '-'}</td>
             <td>${escapeHtml(getDaysSince(lastResearchDate))}</td>
+            <td>${member.isActivePaper ? 'Active' : 'Inactive'}</td>
+            <td>${lastPaperDate ? escapeHtml(formatDate(lastPaperDate)) : '-'}</td>
+            <td>${escapeHtml(getDaysSince(lastPaperDate))}</td>
           </tr>
         `;
       })
@@ -177,12 +185,6 @@ export default function DownloadDutySummaryButton({
       font-weight: 700;
     }
 
-    .footer {
-      margin-top: 40px;
-      color: #6b7280;
-      font-size: 12px;
-    }
-
     @media print {
       body {
         margin: 20px;
@@ -219,31 +221,29 @@ export default function DownloadDutySummaryButton({
     <thead>
       <tr>
         <th>Name</th>
+        <th>Presentation Status</th>
+        <th>Last Presentation Day</th>
+        <th>Days Since Presentation</th>
         <th>Paper Status</th>
         <th>Last Paper Day</th>
         <th>Days Since Paper</th>
-        <th>Research Status</th>
-        <th>Last Presentation Day</th>
-        <th>Days Since Presentation</th>
       </tr>
     </thead>
     <tbody>
       ${memberRows || `<tr><td colspan="7">No member data available.</td></tr>`}
     </tbody>
   </table>
-
-  <div class="footer">
-    You can print this page to PDF from your browser if needed.
-  </div>
 </body>
 </html>`;
 
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
     const url = URL.createObjectURL(blob);
 
+    const fileDate = nextSchedule ? formatDate(nextSchedule.date) : getTodayString();
+
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'duty-summary.html';
+    a.download = `duty-summary-${fileDate}.html`;
     a.click();
 
     URL.revokeObjectURL(url);
