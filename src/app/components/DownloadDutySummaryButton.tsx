@@ -72,17 +72,62 @@ export default function DownloadDutySummaryButton({
         return `
           <tr>
             <td>${escapeHtml(date)}</td>
-            <td>Research Presentation</td>
             <td>${escapeHtml(research?.member?.name ?? 'Skipped')}</td>
-          </tr>
-          <tr>
-            <td>${escapeHtml(date)}</td>
-            <td>Paper Briefing</td>
             <td>${escapeHtml(paper?.member?.name ?? 'Skipped')}</td>
           </tr>
         `;
       })
       .join('');
+
+
+    const rankingData = members.map((member: any) => {
+      const lastPaperDate = member.overridePaperDate
+        ? new Date(member.overridePaperDate)
+        : null;
+
+      const lastResearchDate = member.overrideResearchDate
+        ? new Date(member.overrideResearchDate)
+        : null;
+
+      const daysSincePaper =
+        lastPaperDate ? Number(getDaysSince(lastPaperDate)) : -1;
+
+      const daysSinceResearch =
+        lastResearchDate ? Number(getDaysSince(lastResearchDate)) : -1;
+
+      return {
+        name: member.name ?? '',
+        daysSincePaper,
+        daysSinceResearch
+      };
+    });
+
+    const presentationRankingRows = [...rankingData]
+      .sort((a, b) => b.daysSinceResearch - a.daysSinceResearch)
+      .map((member, index) => {
+        return `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${escapeHtml(member.name)}</td>
+            <td>${member.daysSinceResearch >= 0 ? member.daysSinceResearch : '-'}</td>
+          </tr>
+        `;
+      })
+      .join('');
+
+    const paperRankingRows = [...rankingData]
+      .sort((a, b) => b.daysSincePaper - a.daysSincePaper)
+      .map((member, index) => {
+        return `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${escapeHtml(member.name)}</td>
+            <td>${member.daysSincePaper >= 0 ? member.daysSincePaper : '-'}</td>
+          </tr>
+        `;
+      })
+      .join('');
+
 
     const memberRows = members
       .map((member: any) => {
@@ -177,6 +222,30 @@ export default function DownloadDutySummaryButton({
         margin: 20px;
       }
     }
+    h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .ranking-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 12px;
+    }
+
+    @media print {
+      .ranking-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .ranking-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -197,8 +266,8 @@ export default function DownloadDutySummaryButton({
     <thead>
       <tr>
         <th>Date</th>
-        <th>Role</th>
-        <th>Assigned To</th>
+        <th>Research Presentation</th>
+        <th>Paper Briefing</th>
       </tr>
     </thead>
     <tbody>
@@ -223,6 +292,41 @@ export default function DownloadDutySummaryButton({
       ${memberRows || `<tr><td colspan="7">No member data available.</td></tr>`}
     </tbody>
   </table>
+
+  <h2>Ranking</h2>
+  <div class="ranking-grid">
+    <div>
+      <h3>Presentation Ranking</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>Days Since Presentation</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${presentationRankingRows || `<tr><td colspan="3">No data available.</td></tr>`}
+        </tbody>
+      </table>
+    </div>
+
+    <div>
+      <h3>Paper Ranking</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>Days Since Paper</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${paperRankingRows || `<tr><td colspan="3">No data available.</td></tr>`}
+        </tbody>
+      </table>
+    </div>
+  </div>
 </body>
 </html>`;
 
