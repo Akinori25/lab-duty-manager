@@ -56,16 +56,61 @@ export default function MembersClientPage({ initialMembers }: { initialMembers: 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
     try {
       if (editingId) {
-        await updateMember(editingId, {
+        const original = members.find((m) => m.id === editingId);
+
+        const nextOverrideResearchDate = overrideResearchDate
+          ? new Date(overrideResearchDate)
+          : null;
+        const nextOverridePaperDate = overridePaperDate
+          ? new Date(overridePaperDate)
+          : null;
+
+        const originalResearchDate = original?.overrideResearchDate
+          ? new Date(original.overrideResearchDate).toISOString().split('T')[0]
+          : '';
+
+        const originalPaperDate = original?.overridePaperDate
+          ? new Date(original.overridePaperDate).toISOString().split('T')[0]
+          : '';
+
+        const protectedChanged =
+          !!original &&
+          (
+            original.isActiveResearch !== isActiveResearch ||
+            original.isActivePaper !== isActivePaper ||
+            originalResearchDate !== (overrideResearchDate || '') ||
+            originalPaperDate !== (overridePaperDate || '')
+          );
+
+        let adminPassword: string | undefined = undefined;
+
+        if (protectedChanged) {
+          const entered = prompt('Admin password required for status/date changes');
+          if (!entered) {
+            setLoading(false);
+            return;
+          }
+          adminPassword = entered;
+        }
+
+        const result = await updateMember(editingId, {
           name,
           isActiveResearch,
           isActivePaper,
-          overrideResearchDate: overrideResearchDate ? new Date(overrideResearchDate) : null,
-          overridePaperDate: overridePaperDate ? new Date(overridePaperDate) : null,
-          absences: absences.filter(Boolean)
+          overrideResearchDate: nextOverrideResearchDate,
+          overridePaperDate: nextOverridePaperDate,
+          absences: absences.filter(Boolean),
+          adminPassword
         });
+
+        if (!result.success) {
+          alert(result.error || 'Update failed');
+          return;
+        }
+
         window.location.reload();
       }
     } finally {
