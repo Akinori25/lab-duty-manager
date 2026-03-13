@@ -65,6 +65,9 @@ The next Thursday afternoon conference (${formattedDate}) will be held in ${sele
 Research presentation: ${researchName}
 Paper briefing: ${paperName}
 
+Please access the link below to check your next schedule and fill in your absence dates.
+https://lab-duty-manager-7a8c1d0f9b2e6a4c3d5f1b8e2c9a6.vercel.app
+
 Best regards,
 Akinori Kinoshita`;
 
