@@ -4,11 +4,10 @@ import { useEffect, useState } from 'react';
 import { addMember, updateMember } from '../actions/members';
 
 export default function MembersClientPage({ initialMembers }: { initialMembers: any[] }) {
-  const [members, setMembers] = useState(initialMembers);
+  const [members] = useState(initialMembers);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  // Form State
   const [name, setName] = useState('');
   const [isActiveResearch, setIsActiveResearch] = useState(true);
   const [isActivePaper, setIsActivePaper] = useState(true);
@@ -115,6 +114,18 @@ export default function MembersClientPage({ initialMembers }: { initialMembers: 
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isAdding, editingId]);
+
+  useEffect(() => {
+    if (isAdding || editingId) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [isAdding, editingId]);
 
   return (
@@ -239,26 +250,28 @@ export default function MembersClientPage({ initialMembers }: { initialMembers: 
           style={{
             position: 'fixed',
             inset: 0,
-            background: 'rgba(0, 0, 0, 0.45)',
+            background: 'rgba(0, 0, 0, 0.55)',
+            backdropFilter: 'blur(3px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 1000,
-            padding: '1rem'
+            padding: '1.5rem'
           }}
         >
           <div
             onClick={(e) => e.stopPropagation()}
             style={{
               width: '100%',
-              maxWidth: '820px',
+              maxWidth: '900px',
               maxHeight: '90vh',
               overflowY: 'auto',
-              background: 'var(--bg-main)',
-              borderRadius: '12px',
-              border: '1px solid var(--border-color)',
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.25)',
-              padding: '1.5rem'
+              background: '#ffffff',
+              color: '#0f172a',
+              borderRadius: '18px',
+              border: '1px solid rgba(15, 23, 42, 0.08)',
+              boxShadow: '0 24px 80px rgba(0, 0, 0, 0.28)',
+              padding: '2rem'
             }}
           >
             <div
@@ -266,108 +279,108 @@ export default function MembersClientPage({ initialMembers }: { initialMembers: 
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                marginBottom: '1rem'
+                marginBottom: '1.5rem'
               }}
             >
-              <h3 style={{ margin: 0 }}>{isAdding ? 'Add New Member' : 'Edit Member'}</h3>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.75rem', fontWeight: 700 }}>
+                  {isAdding ? 'Add New Member' : 'Edit Member'}
+                </h3>
+                <div style={{ marginTop: '0.35rem', fontSize: '0.95rem', color: '#64748b' }}>
+                  {isAdding
+                    ? 'Create a new laboratory member.'
+                    : 'Update member status, dates, and planned absences.'}
+                </div>
+              </div>
+
               <button
                 type="button"
                 onClick={cancelEdit}
-                className="btn btn-secondary"
-                style={{ padding: '0.4rem 0.75rem' }}
+                aria-label="Close modal"
+                style={{
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '12px',
+                  border: '1px solid #e2e8f0',
+                  background: '#ffffff',
+                  cursor: 'pointer',
+                  fontSize: '1.4rem',
+                  lineHeight: 1,
+                  color: '#334155'
+                }}
               >
-                ✕
+                ×
               </button>
             </div>
 
             <form onSubmit={isAdding ? handleAdd : handleUpdate}>
-              <div style={{ display: 'grid', gap: '1rem' }}>
-                <div>
-                  <label
+              <div style={{ display: 'grid', gap: '1.25rem' }}>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: isAdding
+                      ? '1fr'
+                      : 'minmax(0, 1.2fr) minmax(0, 0.8fr)',
+                    gap: '1rem'
+                  }}
+                >
+                  <div
                     style={{
-                      display: 'block',
-                      fontSize: '0.875rem',
-                      marginBottom: '0.5rem',
-                      color: 'var(--text-muted)'
+                      background: '#f8fafc',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '14px',
+                      padding: '1rem'
                     }}
                   >
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '0.75rem',
-                      borderRadius: '6px',
-                      border: '1px solid var(--border-color)'
-                    }}
-                  />
-                </div>
-
-                {!isAdding && (
-                  <>
-                    <div
+                    <label
                       style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-                        gap: '1rem'
+                        display: 'block',
+                        fontSize: '0.875rem',
+                        marginBottom: '0.5rem',
+                        color: '#64748b',
+                        fontWeight: 600
                       }}
                     >
-                      <div>
-                        <label
-                          style={{
-                            display: 'block',
-                            fontSize: '0.875rem',
-                            marginBottom: '0.5rem',
-                            color: 'var(--text-muted)'
-                          }}
-                        >
-                          Last Research Date
-                        </label>
-                        <input
-                          type="date"
-                          value={overrideResearchDate}
-                          onChange={(e) => setOverrideResearchDate(e.target.value)}
-                          style={{
-                            width: '100%',
-                            padding: '0.75rem',
-                            borderRadius: '6px',
-                            border: '1px solid var(--border-color)'
-                          }}
-                        />
-                      </div>
+                      Name
+                    </label>
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                      placeholder="Enter member name"
+                      style={{
+                        width: '100%',
+                        padding: '0.9rem 1rem',
+                        borderRadius: '10px',
+                        border: '1px solid #cbd5e1',
+                        background: '#ffffff',
+                        fontSize: '1rem'
+                      }}
+                    />
+                  </div>
 
-                      <div>
-                        <label
-                          style={{
-                            display: 'block',
-                            fontSize: '0.875rem',
-                            marginBottom: '0.5rem',
-                            color: 'var(--text-muted)'
-                          }}
-                        >
-                          Last Paper Date
-                        </label>
-                        <input
-                          type="date"
-                          value={overridePaperDate}
-                          onChange={(e) => setOverridePaperDate(e.target.value)}
-                          style={{
-                            width: '100%',
-                            padding: '0.75rem',
-                            borderRadius: '6px',
-                            border: '1px solid var(--border-color)'
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
+                  {!isAdding && (
+                    <div
+                      style={{
+                        background: '#f8fafc',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '14px',
+                        padding: '1rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        gap: '0.9rem'
+                      }}
+                    >
                       <label
-                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.6rem',
+                          fontWeight: 600,
+                          color: '#0f172a'
+                        }}
                       >
                         <input
                           type="checkbox"
@@ -380,7 +393,13 @@ export default function MembersClientPage({ initialMembers }: { initialMembers: 
                       </label>
 
                       <label
-                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.6rem',
+                          fontWeight: 600,
+                          color: '#0f172a'
+                        }}
                       >
                         <input
                           type="checkbox"
@@ -392,13 +411,93 @@ export default function MembersClientPage({ initialMembers }: { initialMembers: 
                         Active (Paper)
                       </label>
                     </div>
+                  )}
+                </div>
+
+                {!isAdding && (
+                  <>
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+                        gap: '1rem'
+                      }}
+                    >
+                      <div
+                        style={{
+                          background: '#f8fafc',
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '14px',
+                          padding: '1rem'
+                        }}
+                      >
+                        <label
+                          style={{
+                            display: 'block',
+                            fontSize: '0.875rem',
+                            marginBottom: '0.5rem',
+                            color: '#64748b',
+                            fontWeight: 600
+                          }}
+                        >
+                          Last Research Date
+                        </label>
+                        <input
+                          type="date"
+                          value={overrideResearchDate}
+                          onChange={(e) => setOverrideResearchDate(e.target.value)}
+                          style={{
+                            width: '100%',
+                            padding: '0.9rem 1rem',
+                            borderRadius: '10px',
+                            border: '1px solid #cbd5e1',
+                            background: '#ffffff',
+                            fontSize: '1rem'
+                          }}
+                        />
+                      </div>
+
+                      <div
+                        style={{
+                          background: '#f8fafc',
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '14px',
+                          padding: '1rem'
+                        }}
+                      >
+                        <label
+                          style={{
+                            display: 'block',
+                            fontSize: '0.875rem',
+                            marginBottom: '0.5rem',
+                            color: '#64748b',
+                            fontWeight: 600
+                          }}
+                        >
+                          Last Paper Date
+                        </label>
+                        <input
+                          type="date"
+                          value={overridePaperDate}
+                          onChange={(e) => setOverridePaperDate(e.target.value)}
+                          style={{
+                            width: '100%',
+                            padding: '0.9rem 1rem',
+                            borderRadius: '10px',
+                            border: '1px solid #cbd5e1',
+                            background: '#ffffff',
+                            fontSize: '1rem'
+                          }}
+                        />
+                      </div>
+                    </div>
 
                     <div
                       style={{
-                        padding: '1rem',
-                        background: 'var(--bg-light)',
-                        borderRadius: '8px',
-                        border: '1px solid var(--border-color)'
+                        background: '#f8fafc',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '14px',
+                        padding: '1rem'
                       }}
                     >
                       <div
@@ -406,61 +505,134 @@ export default function MembersClientPage({ initialMembers }: { initialMembers: 
                           display: 'flex',
                           justifyContent: 'space-between',
                           alignItems: 'center',
-                          marginBottom: '0.75rem'
+                          gap: '1rem',
+                          flexWrap: 'wrap',
+                          marginBottom: '0.9rem'
                         }}
                       >
-                        <label
-                          style={{
-                            fontSize: '0.875rem',
-                            fontWeight: 600,
-                            color: 'var(--text-main)'
-                          }}
-                        >
-                          Known Absences
-                        </label>
+                        <div>
+                          <div
+                            style={{
+                              fontSize: '1rem',
+                              fontWeight: 700,
+                              color: '#0f172a'
+                            }}
+                          >
+                            Known Absences
+                          </div>
+                          <div style={{ fontSize: '0.875rem', color: '#64748b', marginTop: '0.2rem' }}>
+                            Register dates when this member should be excluded.
+                          </div>
+                        </div>
+
                         <button
                           type="button"
                           onClick={handleAddAbsence}
                           className="btn btn-secondary"
-                          style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
+                          style={{
+                            padding: '0.55rem 0.9rem',
+                            fontSize: '0.875rem',
+                            borderRadius: '999px'
+                          }}
                         >
                           + Add Date
                         </button>
                       </div>
 
-                      {absences.map((absenceStr, idx) => (
+                      {absences.length > 0 && (
                         <div
-                          key={idx}
                           style={{
                             display: 'flex',
-                            gap: '0.5rem',
-                            marginBottom: '0.5rem'
+                            flexWrap: 'wrap',
+                            gap: '0.6rem',
+                            marginBottom: '1rem'
                           }}
                         >
-                          <input
-                            type="date"
-                            value={absenceStr}
-                            onChange={(e) => handleUpdateAbsence(idx, e.target.value)}
-                            style={{
-                              flex: 1,
-                              padding: '0.5rem',
-                              borderRadius: '4px',
-                              border: '1px solid var(--border-color)'
-                            }}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveAbsence(idx)}
-                            className="btn btn-secondary"
-                            style={{ padding: '0.5rem 0.75rem' }}
-                          >
-                            X
-                          </button>
+                          {absences
+                            .filter(Boolean)
+                            .map((absenceStr, idx) => (
+                              <div
+                                key={`${absenceStr}-${idx}`}
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '0.5rem',
+                                  padding: '0.45rem 0.7rem',
+                                  background: '#e0f2fe',
+                                  border: '1px solid #bae6fd',
+                                  borderRadius: '999px',
+                                  fontSize: '0.875rem',
+                                  color: '#075985'
+                                }}
+                              >
+                                <span>{absenceStr}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveAbsence(idx)}
+                                  style={{
+                                    border: 'none',
+                                    background: 'transparent',
+                                    cursor: 'pointer',
+                                    color: '#0c4a6e',
+                                    fontWeight: 700,
+                                    padding: 0,
+                                    lineHeight: 1
+                                  }}
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ))}
                         </div>
-                      ))}
+                      )}
+
+                      <div style={{ display: 'grid', gap: '0.65rem' }}>
+                        {absences.map((absenceStr, idx) => (
+                          <div
+                            key={idx}
+                            style={{
+                              display: 'grid',
+                              gridTemplateColumns: '1fr auto',
+                              gap: '0.5rem'
+                            }}
+                          >
+                            <input
+                              type="date"
+                              value={absenceStr}
+                              onChange={(e) => handleUpdateAbsence(idx, e.target.value)}
+                              style={{
+                                width: '100%',
+                                padding: '0.8rem 0.95rem',
+                                borderRadius: '10px',
+                                border: '1px solid #cbd5e1',
+                                background: '#ffffff',
+                                fontSize: '0.95rem'
+                              }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveAbsence(idx)}
+                              className="btn btn-secondary"
+                              style={{
+                                padding: '0.8rem 0.95rem',
+                                minWidth: '72px'
+                              }}
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ))}
+                      </div>
 
                       {absences.length === 0 && (
-                        <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+                        <div
+                          style={{
+                            fontSize: '0.925rem',
+                            color: '#64748b',
+                            padding: '0.8rem 0',
+                            borderTop: '1px dashed #cbd5e1'
+                          }}
+                        >
                           No absences scheduled.
                         </div>
                       )}
@@ -472,8 +644,9 @@ export default function MembersClientPage({ initialMembers }: { initialMembers: 
                   style={{
                     display: 'flex',
                     justifyContent: 'flex-end',
-                    gap: '0.5rem',
-                    marginTop: '0.5rem'
+                    gap: '0.75rem',
+                    marginTop: '0.25rem',
+                    paddingTop: '0.5rem'
                   }}
                 >
                   <button
@@ -481,10 +654,22 @@ export default function MembersClientPage({ initialMembers }: { initialMembers: 
                     className="btn btn-secondary"
                     onClick={cancelEdit}
                     disabled={loading}
+                    style={{
+                      padding: '0.85rem 1.25rem',
+                      borderRadius: '12px'
+                    }}
                   >
                     Cancel
                   </button>
-                  <button type="submit" className="btn btn-primary" disabled={loading}>
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    disabled={loading}
+                    style={{
+                      padding: '0.85rem 1.35rem',
+                      borderRadius: '12px'
+                    }}
+                  >
                     {loading ? 'Saving...' : 'Save'}
                   </button>
                 </div>
