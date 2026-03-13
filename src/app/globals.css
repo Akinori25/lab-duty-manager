@@ -291,6 +291,10 @@ h1.page-title {
     margin: 0;
   }
 
+  .mobile-header .nav-links {
+    display: none;
+  }
+
 .mobile-nav {
   display: grid;
   grid-template-columns: 1fr 1fr;
