@@ -37,33 +37,38 @@ export default function ScheduleClientPage({
     );
   };
 
-  const roleLabelStyle = (type: 'paper' | 'research'): React.CSSProperties => ({
+  const rolePillStyle = (type: 'research' | 'paper'): React.CSSProperties => ({
     display: 'inline-flex',
     alignItems: 'center',
     gap: '0.4rem',
-    fontSize: '0.86rem',
-    fontWeight: 600,
-    padding: '0.34rem 0.7rem',
+    fontSize: '0.8rem',
+    fontWeight: 700,
+    padding: '0.3rem 0.65rem',
     borderRadius: '999px',
     whiteSpace: 'nowrap',
     backgroundColor:
-      type === 'paper' ? 'rgba(147, 51, 234, 0.10)' : 'rgba(37, 99, 235, 0.10)',
-    color: type === 'paper' ? '#7c3aed' : '#2563eb'
+      type === 'research'
+        ? 'rgba(37, 99, 235, 0.10)'
+        : 'rgba(147, 51, 234, 0.10)',
+    color: type === 'research' ? '#2563eb' : '#7c3aed'
   });
 
   const skippedStyle: React.CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
-    fontSize: '0.82rem',
+    fontSize: '0.8rem',
     fontWeight: 600,
-    padding: '0.28rem 0.65rem',
+    padding: '0.28rem 0.6rem',
     borderRadius: '999px',
     backgroundColor: 'var(--bg-subtle, #f3f4f6)',
     color: 'var(--text-muted)',
     border: '1px solid var(--border-color)'
   };
 
-  const cardStyle: React.CSSProperties = {
+  const cardRowStyle: React.CSSProperties = {
+    display: 'grid',
+    gridTemplateColumns: '220px minmax(0, 1fr) minmax(0, 1fr)',
+    alignItems: 'stretch',
     border: '1px solid var(--border-color)',
     borderRadius: '16px',
     backgroundColor: 'var(--bg-main)',
@@ -71,12 +76,17 @@ export default function ScheduleClientPage({
     boxShadow: '0 1px 2px rgba(0,0,0,0.04)'
   };
 
-  const assignmentRowStyle: React.CSSProperties = {
+  const cellStyle: React.CSSProperties = {
+    padding: '1rem 1.1rem',
+    minWidth: 0
+  };
+
+  const assignmentBoxStyle: React.CSSProperties = {
     display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: '1rem',
-    padding: '1rem 1.25rem'
+    flexDirection: 'column',
+    gap: '0.55rem',
+    height: '100%',
+    justifyContent: 'center'
   };
 
   return (
@@ -95,116 +105,116 @@ export default function ScheduleClientPage({
           No assignments to display here.
         </div>
       ) : (
-        <div style={{ display: 'grid', gap: '1rem' }}>
-          {schedules.map((schedule: any) => {
-            const dateString = formatDateString(schedule.date);
-            const paperAssignment = schedule.assignments.find(
-              (a: any) => a.role === 'PAPER'
-            );
-            const researchAssignment = schedule.assignments.find(
-              (a: any) => a.role === 'RESEARCH'
-            );
+        <>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '220px minmax(0, 1fr) minmax(0, 1fr)',
+              gap: 0,
+              padding: '0 0.25rem',
+              color: 'var(--text-muted)',
+              fontSize: '0.82rem',
+              fontWeight: 700,
+              letterSpacing: '0.02em'
+            }}
+          >
+            <div style={{ padding: '0 0.9rem' }}>DATE</div>
+            <div style={{ padding: '0 0.9rem' }}>RESEARCH</div>
+            <div style={{ padding: '0 0.9rem' }}>PAPER</div>
+          </div>
 
-            return (
-              <section key={schedule.id} style={cardStyle}>
-                <div
-                  style={{
-                    padding: '1rem 1.25rem',
-                    borderBottom: '1px solid var(--border-color)',
-                    backgroundColor: 'var(--bg-subtle, #fafafa)'
-                  }}
-                >
+          <div style={{ display: 'grid', gap: '0.9rem' }}>
+            {schedules.map((schedule: any) => {
+              const dateString = formatDateString(schedule.date);
+              const researchAssignment = schedule.assignments.find(
+                (a: any) => a.role === 'RESEARCH'
+              );
+              const paperAssignment = schedule.assignments.find(
+                (a: any) => a.role === 'PAPER'
+              );
+
+              return (
+                <section key={schedule.id} style={cardRowStyle}>
                   <div
                     style={{
-                      fontSize: '1.2rem',
-                      fontWeight: 700,
-                      color: 'var(--text-main)',
-                      letterSpacing: '-0.01em'
-                    }}
-                  >
-                    {dateString}
-                  </div>
-                </div>
-
-                <div style={assignmentRowStyle}>
-                  <div
-                    style={{
+                      ...cellStyle,
+                      backgroundColor: 'var(--bg-subtle, #fafafa)',
+                      borderRight: '1px solid var(--border-color)',
                       display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.85rem',
-                      minWidth: 0
+                      alignItems: 'center'
                     }}
                   >
-                    <span style={roleLabelStyle('paper')}>📄 Paper Briefing</span>
+                    <div>
+                      <div
+                        style={{
+                          fontSize: '1rem',
+                          fontWeight: 700,
+                          color: 'var(--text-main)',
+                          lineHeight: 1.35
+                        }}
+                      >
+                        {dateString}
+                      </div>
+                    </div>
                   </div>
 
                   <div
                     style={{
-                      textAlign: 'right',
-                      fontWeight: 600,
-                      color: 'var(--text-main)',
-                      minWidth: 0
+                      ...cellStyle,
+                      borderRight: '1px solid var(--border-color)'
                     }}
                   >
-                    {paperAssignment ? (
-                      <span
+                    <div style={assignmentBoxStyle}>
+                      <div>
+                        <span style={rolePillStyle('research')}>
+                          🔬 Research Presentation
+                        </span>
+                      </div>
+                      <div
                         style={{
+                          fontSize: '1rem',
+                          fontWeight: 600,
+                          color: 'var(--text-main)',
                           wordBreak: 'break-word'
                         }}
                       >
-                        {paperAssignment.member?.name || 'Unknown'}
-                      </span>
-                    ) : (
-                      <span style={skippedStyle}>Skipped</span>
-                    )}
-                  </div>
-                </div>
-
-                <div
-                  style={{
-                    borderTop: '1px solid var(--border-color)'
-                  }}
-                />
-
-                <div style={assignmentRowStyle}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.85rem',
-                      minWidth: 0
-                    }}
-                  >
-                    <span style={roleLabelStyle('research')}>
-                      🔬 Research Presentation
-                    </span>
+                        {researchAssignment ? (
+                          researchAssignment.member?.name || 'Unknown'
+                        ) : (
+                          <span style={skippedStyle}>Skipped</span>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
-                  <div
-                    style={{
-                      textAlign: 'right',
-                      fontWeight: 600,
-                      color: 'var(--text-main)',
-                      minWidth: 0
-                    }}
-                  >
-                    {researchAssignment ? (
-                      <span
+                  <div style={cellStyle}>
+                    <div style={assignmentBoxStyle}>
+                      <div>
+                        <span style={rolePillStyle('paper')}>
+                          📄 Paper Briefing
+                        </span>
+                      </div>
+                      <div
                         style={{
+                          fontSize: '1rem',
+                          fontWeight: 600,
+                          color: 'var(--text-main)',
                           wordBreak: 'break-word'
                         }}
                       >
-                        {researchAssignment.member?.name || 'Unknown'}
-                      </span>
-                    ) : (
-                      <span style={skippedStyle}>Skipped</span>
-                    )}
+                        {paperAssignment ? (
+                          paperAssignment.member?.name || 'Unknown'
+                        ) : (
+                          <span style={skippedStyle}>Skipped</span>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </section>
-            );
-          })}
-        </div>
+                </section>
+              );
+            })}
+          </div>
+        </>
       )}
 
       <EmailComposer nextSchedule={schedules.length > 0 ? schedules[0] : null} />
