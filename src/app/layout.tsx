@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import './globals.css';
+import AppNav from './components/AppNav';
 
 export const metadata = {
   title: 'Lab Duty Manager',
@@ -17,10 +17,7 @@ export default function RootLayout({
         <div className="layout">
           <nav className="sidebar">
             <h1 className="logo">Lab Duty Manager</h1>
-            <ul className="nav-links">
-              <li><Link href="/schedule">Schedule</Link></li>
-              <li><Link href="/members">Members</Link></li>
-            </ul>
+            <AppNav />
           </nav>
 
           <div className="content-shell">
@@ -28,10 +25,7 @@ export default function RootLayout({
               <div className="mobile-header-top">
                 <h1 className="mobile-logo">Lab Duty Manager</h1>
               </div>
-              <nav className="mobile-nav">
-                <Link href="/schedule" className="mobile-nav-link">Schedule</Link>
-                <Link href="/members" className="mobile-nav-link">Members</Link>
-              </nav>
+              <AppNav />
             </header>
 
             <main className="main-content">
