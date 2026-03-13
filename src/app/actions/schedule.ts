@@ -164,3 +164,73 @@ export async function generateSchedules(password: string, weeks: number = 8) {
     return { success: false, error: 'Failed to generate schedules' };
   }
 }
+
+export async function applySchedule(password: string) {
+  if (password !== process.env.ADMIN_PASSWORD) {
+    throw new Error('Unauthorized');
+  }
+
+  try {
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+
+    const pastSchedules = await prisma.schedule.findMany({
+      where: {
+        date: {
+          lte: today
+        }
+      },
+      include: {
+        assignments: true
+      },
+      orderBy: {
+        date: 'asc'
+      }
+    });
+
+    for (const schedule of pastSchedules) {
+      for (const assignment of schedule.assignments) {
+        if (assignment.role === 'RESEARCH') {
+          await prisma.member.update({
+            where: { id: assignment.memberId },
+            data: { overrideResearchDate: schedule.date }
+          });
+        }
+
+        if (assignment.role === 'PAPER') {
+          await prisma.member.update({
+            where: { id: assignment.memberId },
+            data: { overridePaperDate: schedule.date }
+          });
+        }
+      }
+    }
+
+    await prisma.assignment.deleteMany({
+      where: {
+        schedule: {
+          date: {
+            lte: today
+          }
+        }
+      }
+    });
+
+    await prisma.schedule.deleteMany({
+      where: {
+        date: {
+          lte: today
+        }
+      }
+    });
+
+    revalidatePath('/');
+    revalidatePath('/schedule');
+    revalidatePath('/members');
+
+    return { success: true };
+  } catch (error) {
+    console.error(error);
+    return { success: false, error: 'Failed to apply schedules' };
+  }
+}

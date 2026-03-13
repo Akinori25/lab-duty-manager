@@ -31,24 +31,6 @@ function getTodayString() {
   );
 }
 
-function getLastAssignmentDate(member: any, role: 'PAPER' | 'RESEARCH') {
-  const todayStr = getTodayString();
-
-  const filtered = (member.assignments ?? [])
-    .filter((a: any) => {
-      if (a.role !== role) return false;
-      if (!a.schedule?.date) return false;
-
-      const scheduleDateStr = formatDate(a.schedule.date);
-      return scheduleDateStr <= todayStr;
-    })
-    .sort(
-      (a: any, b: any) =>
-        new Date(b.schedule.date).getTime() - new Date(a.schedule.date).getTime()
-    );
-
-  return filtered.length > 0 ? new Date(filtered[0].schedule.date) : null;
-}
 
 function getDaysSince(date: Date | null) {
   if (!date) return '-';
@@ -104,8 +86,13 @@ export default function DownloadDutySummaryButton({
 
     const memberRows = members
       .map((member: any) => {
-        const lastPaperDate = getLastAssignmentDate(member, 'PAPER');
-        const lastResearchDate = getLastAssignmentDate(member, 'RESEARCH');
+        const lastPaperDate = member.overridePaperDate
+          ? new Date(member.overridePaperDate)
+          : null;
+
+        const lastResearchDate = member.overrideResearchDate
+          ? new Date(member.overrideResearchDate)
+          : null;
 
         return `
           <tr>
@@ -194,7 +181,10 @@ export default function DownloadDutySummaryButton({
 </head>
 <body>
   <h1>Duty Summary</h1>
-  <p>Generated from Lab Duty Manager</p>
+  <p>  
+    Generated from Lab Duty Manager<br>
+    Generated: ${escapeHtml(getTodayString())}
+  </p>
 
   <div class="meta-box">
     <div class="meta-row"><span class="label">Next conference date:</span> ${escapeHtml(nextDate)}</div>
@@ -239,7 +229,7 @@ export default function DownloadDutySummaryButton({
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
     const url = URL.createObjectURL(blob);
 
-    const fileDate = nextSchedule ? formatDate(nextSchedule.date) : getTodayString();
+    const fileDate = getTodayString();
 
     const a = document.createElement('a');
     a.href = url;

@@ -6,6 +6,7 @@ import GenerateScheduleButton from '../components/GenerateScheduleButton';
 import ScheduleClientPage from './ScheduleClientPage';
 import SkipDatesManager from '../components/SkipDatesManager';
 import { getSkipDates } from '../actions/skipDates';
+import ApplyScheduleButton from '../components/ApplyScheduleButton';
 
 export default async function SchedulePage() {
   const schedules = await prisma.schedule.findMany({
@@ -37,6 +38,7 @@ export default async function SchedulePage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <h1 className="page-title" style={{ marginBottom: 0 }}>Rotation Schedule</h1>
         <GenerateScheduleButton />
+        <ApplyScheduleButton />
       </div>
 
       <SkipDatesManager initialSkipDates={skipDates} />
