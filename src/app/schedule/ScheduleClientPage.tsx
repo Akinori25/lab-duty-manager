@@ -37,93 +37,21 @@ export default function ScheduleClientPage({
     );
   };
 
-  const rolePillStyle = (type: 'research' | 'paper'): React.CSSProperties => ({
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '0.4rem',
-    fontSize: '0.8rem',
-    fontWeight: 700,
-    padding: '0.3rem 0.65rem',
-    borderRadius: '999px',
-    whiteSpace: 'nowrap',
-    backgroundColor:
-      type === 'research'
-        ? 'rgba(37, 99, 235, 0.10)'
-        : 'rgba(147, 51, 234, 0.10)',
-    color: type === 'research' ? '#2563eb' : '#7c3aed'
-  });
-
-  const skippedStyle: React.CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    fontSize: '0.8rem',
-    fontWeight: 600,
-    padding: '0.28rem 0.6rem',
-    borderRadius: '999px',
-    backgroundColor: 'var(--bg-subtle, #f3f4f6)',
-    color: 'var(--text-muted)',
-    border: '1px solid var(--border-color)'
-  };
-
-  const cardRowStyle: React.CSSProperties = {
-    display: 'grid',
-    gridTemplateColumns: '220px minmax(0, 1fr) minmax(0, 1fr)',
-    alignItems: 'stretch',
-    border: '1px solid var(--border-color)',
-    borderRadius: '16px',
-    backgroundColor: 'var(--bg-main)',
-    overflow: 'hidden',
-    boxShadow: '0 1px 2px rgba(0,0,0,0.04)'
-  };
-
-  const cellStyle: React.CSSProperties = {
-    padding: '1rem 1.1rem',
-    minWidth: 0
-  };
-
-  const assignmentBoxStyle: React.CSSProperties = {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '0.55rem',
-    height: '100%',
-    justifyContent: 'center'
-  };
-
   return (
-    <div className="table-container" style={{ display: 'grid', gap: '1rem' }}>
+    <div className="schedule-page">
       {schedules.length === 0 ? (
-        <div
-          style={{
-            border: '1px solid var(--border-color)',
-            borderRadius: '16px',
-            backgroundColor: 'var(--bg-main)',
-            padding: '3rem 1.5rem',
-            textAlign: 'center',
-            color: 'var(--text-muted)'
-          }}
-        >
+        <div className="empty-state">
           No assignments to display here.
         </div>
       ) : (
         <>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '220px minmax(0, 1fr) minmax(0, 1fr)',
-              gap: 0,
-              padding: '0 0.25rem',
-              color: 'var(--text-muted)',
-              fontSize: '0.82rem',
-              fontWeight: 700,
-              letterSpacing: '0.02em'
-            }}
-          >
-            <div style={{ padding: '0 0.9rem' }}>DATE</div>
-            <div style={{ padding: '0 0.9rem' }}>RESEARCH</div>
-            <div style={{ padding: '0 0.9rem' }}>PAPER</div>
+          <div className="schedule-header-row">
+            <div>DATE</div>
+            <div>RESEARCH</div>
+            <div>PAPER</div>
           </div>
 
-          <div style={{ display: 'grid', gap: '0.9rem' }}>
+          <div className="schedule-list">
             {schedules.map((schedule: any) => {
               const dateString = formatDateString(schedule.date);
               const researchAssignment = schedule.assignments.find(
@@ -134,78 +62,43 @@ export default function ScheduleClientPage({
               );
 
               return (
-                <section key={schedule.id} style={cardRowStyle}>
-                  <div
-                    style={{
-                      ...cellStyle,
-                      backgroundColor: 'var(--bg-subtle, #fafafa)',
-                      borderRight: '1px solid var(--border-color)',
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}
-                  >
-                    <div>
-                      <div
-                        style={{
-                          fontSize: '1rem',
-                          fontWeight: 700,
-                          color: 'var(--text-main)',
-                          lineHeight: 1.35
-                        }}
-                      >
-                        {dateString}
-                      </div>
-                    </div>
+                <section key={schedule.id} className="schedule-row-card">
+                  <div className="schedule-cell schedule-date-cell">
+                    <div className="mobile-label">Date</div>
+                    <div className="date-text">{dateString}</div>
                   </div>
 
-                  <div
-                    style={{
-                      ...cellStyle,
-                      borderRight: '1px solid var(--border-color)'
-                    }}
-                  >
-                    <div style={assignmentBoxStyle}>
+                  <div className="schedule-cell schedule-assignment-cell">
+                    <div className="mobile-label">Research</div>
+                    <div className="assignment-box">
                       <div>
-                        <span style={rolePillStyle('research')}>
+                        <span className="role-pill research-pill">
                           🔬 Research Presentation
                         </span>
                       </div>
-                      <div
-                        style={{
-                          fontSize: '1rem',
-                          fontWeight: 600,
-                          color: 'var(--text-main)',
-                          wordBreak: 'break-word'
-                        }}
-                      >
+                      <div className="assignee-text">
                         {researchAssignment ? (
                           researchAssignment.member?.name || 'Unknown'
                         ) : (
-                          <span style={skippedStyle}>Skipped</span>
+                          <span className="skipped-badge">Skipped</span>
                         )}
                       </div>
                     </div>
                   </div>
 
-                  <div style={cellStyle}>
-                    <div style={assignmentBoxStyle}>
+                  <div className="schedule-cell schedule-assignment-cell">
+                    <div className="mobile-label">Paper</div>
+                    <div className="assignment-box">
                       <div>
-                        <span style={rolePillStyle('paper')}>
+                        <span className="role-pill paper-pill">
                           📄 Paper Briefing
                         </span>
                       </div>
-                      <div
-                        style={{
-                          fontSize: '1rem',
-                          fontWeight: 600,
-                          color: 'var(--text-main)',
-                          wordBreak: 'break-word'
-                        }}
-                      >
+                      <div className="assignee-text">
                         {paperAssignment ? (
                           paperAssignment.member?.name || 'Unknown'
                         ) : (
-                          <span style={skippedStyle}>Skipped</span>
+                          <span className="skipped-badge">Skipped</span>
                         )}
                       </div>
                     </div>
@@ -219,6 +112,200 @@ export default function ScheduleClientPage({
 
       <EmailComposer nextSchedule={schedules.length > 0 ? schedules[0] : null} />
       <DownloadDutySummaryButton schedules={schedules} members={members} />
+
+      <style jsx>{`
+        .schedule-page {
+          display: grid;
+          gap: 1rem;
+        }
+
+        .empty-state {
+          border: 1px solid var(--border-color);
+          border-radius: 16px;
+          background: var(--bg-main);
+          padding: 3rem 1.5rem;
+          text-align: center;
+          color: var(--text-muted);
+        }
+
+        .schedule-header-row {
+          display: grid;
+          grid-template-columns: 220px minmax(0, 1fr) minmax(0, 1fr);
+          padding: 0 0.25rem;
+          color: var(--text-muted);
+          font-size: 0.82rem;
+          font-weight: 700;
+          letter-spacing: 0.02em;
+        }
+
+        .schedule-header-row > div {
+          padding: 0 0.9rem;
+        }
+
+        .schedule-list {
+          display: grid;
+          gap: 0.9rem;
+        }
+
+        .schedule-row-card {
+          display: grid;
+          grid-template-columns: 220px minmax(0, 1fr) minmax(0, 1fr);
+          border: 1px solid var(--border-color);
+          border-radius: 16px;
+          background: var(--bg-main);
+          overflow: hidden;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        }
+
+        .schedule-cell {
+          min-width: 0;
+          padding: 1rem 1.1rem;
+        }
+
+        .schedule-date-cell {
+          display: flex;
+          align-items: center;
+          background: var(--bg-subtle, #fafafa);
+          border-right: 1px solid var(--border-color);
+        }
+
+        .schedule-assignment-cell {
+          display: flex;
+          align-items: center;
+        }
+
+        .schedule-assignment-cell:not(:last-child) {
+          border-right: 1px solid var(--border-color);
+        }
+
+        .date-text {
+          font-size: 1rem;
+          font-weight: 700;
+          color: var(--text-main);
+          line-height: 1.35;
+        }
+
+        .assignment-box {
+          display: flex;
+          flex-direction: column;
+          gap: 0.55rem;
+          justify-content: center;
+          width: 100%;
+        }
+
+        .role-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.4rem;
+          font-size: 0.8rem;
+          font-weight: 700;
+          padding: 0.3rem 0.65rem;
+          border-radius: 999px;
+          white-space: nowrap;
+        }
+
+        .research-pill {
+          background: rgba(37, 99, 235, 0.1);
+          color: #2563eb;
+        }
+
+        .paper-pill {
+          background: rgba(147, 51, 234, 0.1);
+          color: #7c3aed;
+        }
+
+        .assignee-text {
+          font-size: 1rem;
+          font-weight: 600;
+          color: var(--text-main);
+          word-break: break-word;
+        }
+
+        .skipped-badge {
+          display: inline-flex;
+          align-items: center;
+          font-size: 0.8rem;
+          font-weight: 600;
+          padding: 0.28rem 0.6rem;
+          border-radius: 999px;
+          background: var(--bg-subtle, #f3f4f6);
+          color: var(--text-muted);
+          border: 1px solid var(--border-color);
+        }
+
+        .mobile-label {
+          display: none;
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: var(--text-muted);
+          letter-spacing: 0.03em;
+          text-transform: uppercase;
+          margin-bottom: 0.45rem;
+        }
+
+        @media (max-width: 900px) {
+          .schedule-header-row {
+            display: none;
+          }
+
+          .schedule-row-card {
+            grid-template-columns: 1fr;
+          }
+
+          .schedule-date-cell {
+            border-right: none;
+            border-bottom: 1px solid var(--border-color);
+          }
+
+          .schedule-assignment-cell {
+            border-right: none !important;
+          }
+
+          .schedule-assignment-cell:not(:last-child) {
+            border-bottom: 1px solid var(--border-color);
+          }
+
+          .mobile-label {
+            display: block;
+          }
+
+          .schedule-cell {
+            padding: 0.95rem 1rem;
+          }
+
+          .date-text {
+            font-size: 1rem;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .schedule-page {
+            gap: 0.85rem;
+          }
+
+          .schedule-list {
+            gap: 0.75rem;
+          }
+
+          .schedule-row-card {
+            border-radius: 14px;
+          }
+
+          .schedule-cell {
+            padding: 0.9rem 0.9rem;
+          }
+
+          .role-pill {
+            font-size: 0.76rem;
+            white-space: normal;
+            line-height: 1.3;
+          }
+
+          .assignee-text {
+            font-size: 0.95rem;
+          }
+        }
+      `}</style>
     </div>
   );
 }
